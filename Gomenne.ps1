@@ -1,8 +1,9 @@
 ﻿#なんしかセキュリティで実行できないのはつまんないのでこれでよしなに。
 Set-ExecutionPolicy Unrestricted
 
-#別窓開きレジストリ登録関数
-function CreateOpenNewItem($xlsx){
+#拡張子のデフォルト（ダブルクリック時）挙動を「開く」に戻す
+#※拡張子の起動選択に「別窓」が残るが害はないので放置
+function RepairRegistryProperty($xlsx){
     Set-ItemProperty $xlsx -name "(default)" -value "open"
 }
 
@@ -13,5 +14,5 @@ $rt = "HKCR"
 Remove-PSDrive -Name $rt
 $v = New-PSDrive -PSProvider Registry -Name $rt -Root HKEY_CLASSES_ROOT
 
-CreateOpenNewItem ($rt + ":\Excel.Sheet.12\shell")
-CreateOpenNewItem ($rt + ":\Excel.Sheet.8\shell")
+RepairRegistryProperty ($rt + ":\Excel.Sheet.12\shell")
+RepairRegistryProperty ($rt + ":\Excel.Sheet.8\shell")

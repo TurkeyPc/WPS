@@ -1,8 +1,17 @@
 ﻿#なんしかセキュリティで実行できないのはつまんないのでこれでよしなに。
 Set-ExecutionPolicy Unrestricted
 
-#別窓開きレジストリ登録関数
-function CreateOpenNewItem($xlsx){
+#拡張子の起動選択に「別窓」を追加してデフォルトの挙動に設定する
+function CreateOpenNewItem2($xlsx){
+
+    $newname = CreateOpenNewItem1($xlsx)
+
+    #上で追加した「別窓」を拡張子のデフォルト（ダブルクリック時）挙動に設定する
+    Set-ItemProperty $xlsx -name "(default)" -value $newname
+}
+
+#拡張子の起動選択に「別窓」を追加する
+function CreateOpenNewItem1($xlsx){
 
     $newkeyname = "OpenNewW"
     $newitem = $xlsx + "\" + $newkeyname
@@ -22,7 +31,8 @@ function CreateOpenNewItem($xlsx){
     #↑でつくったキーの下にcommandキーを作って既定値には
     CreateKey ($newitem + "\command") $opennewcommand
 
-    Set-ItemProperty $xlsx -name "(default)" -value $newkeyname
+    #作ったキーの名前を返す
+    $newkeyname
 }
 
 #レジストリのキーをつくり既定値を設定する
@@ -38,5 +48,5 @@ $rt = "HKCR"
 Remove-PSDrive -Name $rt
 $v = New-PSDrive -PSProvider Registry -Name $rt -Root HKEY_CLASSES_ROOT
 
-CreateOpenNewItem ($rt + ":\Excel.Sheet.12\shell")
-CreateOpenNewItem ($rt + ":\Excel.Sheet.8\shell")
+CreateOpenNewItem2 ($rt + ":\Excel.Sheet.12\shell")
+CreateOpenNewItem2 ($rt + ":\Excel.Sheet.8\shell")
