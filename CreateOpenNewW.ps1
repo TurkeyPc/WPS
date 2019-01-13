@@ -1,5 +1,5 @@
 ﻿#なんしかセキュリティで実行できないのはつまんないのでこれでよしなに。
-Set-ExecutionPolicy RemoteSigned
+Set-ExecutionPolicy Unrestricted
 
 #別窓開きレジストリ登録関数
 function CreateOpenNewItem($xlsx){
