@@ -1,0 +1,2 @@
+# WPS
+WPS Office のSpreadsheetで起動時にファイル毎のWindowを開くようにレジストリ編集するPowerShellのスクリプト
