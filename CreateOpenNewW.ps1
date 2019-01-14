@@ -7,7 +7,7 @@ function CreateOpenNewItem2($xlsx){
     $newname = CreateOpenNewItem1($xlsx)
 
     #上で追加した「別窓」を拡張子のデフォルト（ダブルクリック時）挙動に設定する
-    Set-ItemProperty $xlsx -name "(default)" -value $newname
+    Set-ItemProperty $xlsx -name "(default)" -value "OpenNewW"
 }
 
 #拡張子の起動選択に「別窓」を追加する
@@ -17,7 +17,9 @@ function CreateOpenNewItem1($xlsx){
     $newitem = $xlsx + "\" + $newkeyname
 
     #あったらば消しさる
-    Remove-Item $newitem -Recurse
+    if(Test-Path $newitem){
+        Remove-Item $newitem -Recurse
+    }
 
     #新しいウインドウに表示するコマンド文字列を生成
     #といってもopenのcommandに"/n"つけるだけ。
@@ -30,9 +32,6 @@ function CreateOpenNewItem1($xlsx){
     
     #↑でつくったキーの下にcommandキーを作って既定値には
     CreateKey ($newitem + "\command") $opennewcommand
-
-    #作ったキーの名前を返す
-    $newkeyname
 }
 
 #レジストリのキーをつくり既定値を設定する
@@ -41,12 +40,28 @@ function CreateKey($item,$defaultvalue){
     Set-ItemProperty $item -name "(default)" -value $defaultvalue
 }
 
+function ExistPSDrive($dname){
+    $vv = Get-PSDrive
+    foreach($aa in $vv){
+        if($aa.Name -eq $dname){
+            1
+            return
+        }
+    }
+
+    0
+    return
+}
+
 #HKEY_CLASSES_ROOTをPSDriveのHKCRに割り当てる
 #通常はNew-PSDriveだけでいいが
 #ISEで2回目以降にエラー出るのがうっとうしいのでいったんHKCRの割り当てを解除してからNew-PSDriveしている
 $rt = "HKCR"
-Remove-PSDrive -Name $rt
-$v = New-PSDrive -PSProvider Registry -Name $rt -Root HKEY_CLASSES_ROOT
+if(ExistPSDrive $rt -eq 0){
+    
+}else{
+    New-PSDrive -PSProvider Registry -Name $rt -Root HKEY_CLASSES_ROOT
+}
 
 CreateOpenNewItem2 ($rt + ":\Excel.Sheet.12\shell")
 CreateOpenNewItem2 ($rt + ":\Excel.Sheet.8\shell")
